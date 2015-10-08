@@ -1,11 +1,12 @@
-__author__ = 'mustafa parlaktuna'
+from src.logger_data import LogData
+from src.data_store import DataStore
 
 import logging
 import sys
 
 from PySide.QtGui import *
+from PySide.QtCore import *
 
-from src.logger_data import LogData
 
 class MainWindow(QWidget):
     """
@@ -17,13 +18,16 @@ class MainWindow(QWidget):
         self.setWindowTitle("Cross Docking Project")
 
         self.set_buttons()
-        self.logger = LogData()
 
+        self.set_logger()
         self.set_layout()
 
+        self.data = None
 
     def set_buttons(self):
         self.new_data_set_button = QPushButton('New Data Set')
+        self.new_data_set_button.clicked.connect(self.new_data_set)
+
         self.load_data_set_button = QPushButton('Load Data Set')
         self.save_data_set_button = QPushButton('Save Data Set')
 
@@ -45,10 +49,12 @@ class MainWindow(QWidget):
         self.show_simulation_button = QPushButton('Show Simulation')
         self.show_data_table = QPushButton('Show Run Time Data Table')
 
+        self.debug_check = QCheckBox('Debug Mode')
+        self.debug_check.stateChanged.connect(self.set_logger_output)
+
         self.data_set_number = QSpinBox()
         self.data_set_number.setMinimum(0)
 
-        # self.new_data_set_button.clicked.connect(self.new_data_set)
         # self.load_data_set_button.clicked.connect(self.load_data)
         # self.save_data_set_button.clicked.connect(self.save_data)
         #
@@ -70,15 +76,24 @@ class MainWindow(QWidget):
         # self.solve_step_button.clicked.connect(self.step_button)
         # self.data_set_number.valueChanged.connect(self.set_data_set_number)
 
+    def set_logger(self):
+        self.logger = LogData()
+        self.logger_root = logging.getLogger()
+        self.logger_root.setLevel(logging.INFO)
+        self.logger_ch = logging.StreamHandler(self.logger)
+        self.logger_ch.setLevel(logging.INFO)
+        self.logger_root.addHandler(self.logger_ch)
+
     def set_layout(self):
         self.data_set_layout = QGridLayout()
-        self.data_set_layout.addWidget(self.new_data_set_button, 1 ,1)
-        self.data_set_layout.addWidget(self.load_data_set_button, 1 ,2)
-        self.data_set_layout.addWidget(self.save_data_set_button, 1 ,3)
+        self.data_set_layout.addWidget(self.new_data_set_button, 1, 1)
+        self.data_set_layout.addWidget(self.load_data_set_button, 1, 2)
+        self.data_set_layout.addWidget(self.save_data_set_button, 1, 3)
+        self.data_set_layout.addWidget(self.debug_check, 1, 4)
 
-        self.data_set_layout.addWidget(self.truck_data_button, 2 ,1)
-        self.data_set_layout.addWidget(self.system_data_button, 2 ,2)
-        self.data_set_layout.addWidget(self.algorithm_data_button, 2 ,3)
+        self.data_set_layout.addWidget(self.truck_data_button, 2, 1)
+        self.data_set_layout.addWidget(self.system_data_button, 2, 2)
+        self.data_set_layout.addWidget(self.algorithm_data_button, 2, 3)
 
         self.data_set_layout.addWidget(self.generate_data_set_button, 3, 1)
         self.data_set_layout.addWidget(self.show_data_button, 3, 2)
@@ -107,10 +122,25 @@ class MainWindow(QWidget):
         self.layout.addWidget(self.logger, 1, 2)
 
         self.setLayout(self.layout)
-        self.pause_bool = False
+
+    def set_logger_output(self, state):
+        if state == Qt.Checked:
+            self.logger_root.setLevel(logging.DEBUG)
+            self.logger_ch.setLevel(logging.DEBUG)
+            logging.info("Debug Mode")
+        else:
+            self.logger_root.setLevel(logging.INFO)
+            self.logger_ch.setLevel(logging.INFO)
+            logging.info("Normal Mode")
+
+    def new_data_set(self):
+        """
+        :return:
+        """
+        self.data = DataStore()
+        logging.debug('New Data Set')
 
 if __name__ == '__main__':
-    logging.basicConfig(format='%(message)s',  level=logging.INFO)
     myApp = QApplication(sys.argv)
     mainWindow = MainWindow()
     mainWindow.showMaximized()
