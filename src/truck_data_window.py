@@ -6,6 +6,7 @@ from PySide.QtCore import *
 from src.truck_table_widget import TruckTableWidget
 from src.data_store import DataStore
 
+
 class TruckDataWindow(QDialog):
     """
     Data window widget
@@ -21,7 +22,6 @@ class TruckDataWindow(QDialog):
         self.setupComponents()
         self.setGeometry(300, 400, 500, 500)
         self.setWindowModality(Qt.ApplicationModal)
-
 
     def setupComponents(self):
         """
@@ -155,7 +155,7 @@ class TruckDataWindow(QDialog):
                 if data:
                     goods.append(int(data.text()))
                 else:
-                    missing_data = True
+                    goods.append(0)
 
             self.data.inbound_goods.append(goods)
 
@@ -166,7 +166,8 @@ class TruckDataWindow(QDialog):
                 if data:
                     goods.append(int(data.text()))
                 else:
-                    missing_data = True
+                    goods.append(0)
+
             self.data.outbound_goods.append(goods)
 
         for compound_truck in self.compoundView:
@@ -176,7 +177,8 @@ class TruckDataWindow(QDialog):
                 if data:
                     goods.append(int(data.text()))
                 else:
-                    missing_data = True
+                    goods.append(0)
+
             self.data.compound_coming_goods.append(goods)
 
             goods = []
@@ -186,7 +188,7 @@ class TruckDataWindow(QDialog):
                 if data:
                     goods.append(int(data.text()))
                 else:
-                    missing_data = True
+                    goods.append(0)
             self.data.compound_going_goods.append(goods)
 
     def prev_data(self):
