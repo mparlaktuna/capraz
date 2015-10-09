@@ -349,14 +349,19 @@ class CompoundTruck(Truck):
         logging.debug("Ready to load: {0}".format(self.truck_name))
         logging.debug("Going good amounts {0}: {1}".format(self.truck_name, self.going_good_amounts))
         self.shipping_door.reserve_goods(self.going_good_amounts)
-        load_finish = self.current_time + self.time_to_load
-        logging.debug("Loading finish {0}: {1}".format(self.truck_name, load_finish))
+        self.finish_time = self.current_time + self.time_to_load
+        logging.debug("Loading finish {0}: {1}".format(self.truck_name, self.finish_time))
         if self.shipping_door.check_goods():
             self.current_state = 9
-            self.finish_time = self.current_time + self.time_to_load
-        elif load_finish >= self.bounds[1]:
-            self.finish_time = self.current_time + self.time_to_load
+        elif self.finish_time >= self.bounds[1]:
             self.next_state()
+        #
+        # if self.shipping_door.check_goods():
+        #     self.current_state = 9
+        #     self.finish_time = self.current_time + self.time_to_load
+        # elif load_finish >= self.bounds[1]:
+        #     self.finish_time = self.current_time + self.time_to_load
+        #     self.next_state()
 
     def must_load(self):
         """
@@ -409,6 +414,7 @@ class CompoundTruck(Truck):
         """
         calculate error values
         """
+        logging.info("truck {0}, finish time {1}, bounds {2}".format(self.truck_name, self.finish_time, self.bounds))
         if self.bounds[0] <= self.finish_time <= self.bounds[1]:
             self.error = 0
         elif self.finish_time < self.bounds[0]:
