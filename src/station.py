@@ -1,7 +1,7 @@
-__author__ = 'robotes'
-
 from src.receiving_door import ReceivingDoor
 from src.shipping_doors import ShippingDoor
+from src.good_store import GoodStore
+
 import itertools
 import logging
 
@@ -18,7 +18,7 @@ class Station(object):
         self.receiving_doors = {}
         self.shipping_doors = {}
         self.not_ready_goods = {}
-        self.station_goods = {}
+        self.station_goods = GoodStore()
         self.good_transfer_time = transfer_time
 
     def add_receiving_door(self):
@@ -61,27 +61,21 @@ class Station(object):
 
     def check_states(self):
         logging.debug("station goods")
-        for goods in self.station_goods.values():
-            for good in goods:
-                logging.debug("type: {0}, amount: {1}".format(good.type, good.amount))
+        self.station_goods.log_goods()
 
         for doors in itertools.chain(self.receiving_doors.values()):
             if doors.good_list:
                 self.add_goods(doors.good_list)
 
-    def add_goods(self, goods, current_time):
-        for good in goods:
-            good.transfer_time = current_time + self.good_transfer_time
-            if good.type in self.not_ready_goods.keys():
-                self.not_ready_goods[good.type].append(good)
-            else:
-                self.not_ready_goods[good.type] = []
-                self.not_ready_goods[good.type].append(good)
-        #     if good.type in self.not_ready_goods.keys():
-        #         self.not_ready_goods[good.type].append(good)
-        #     else:
-        #         self.not_ready_goods[good.type] = []
-        #         self.not_ready_goods[good.type].append(good)
+    def add_goods(self, good_store, current_time):
+        for goods in good_store.good_list.values():
+            for good in goods:
+                good.transfer_time = current_time + self.good_transfer_time
+                if good.type in self.not_ready_goods.keys():
+                    self.not_ready_goods[good.type].append(good)
+                else:
+                    self.not_ready_goods[good.type] = []
+                    self.not_ready_goods[good.type].append(good)
 
     def check_good_transfer(self, current_time):
         """
@@ -91,14 +85,9 @@ class Station(object):
         for goods in self.not_ready_goods.values():
             for good in goods:
                 if good.transfer_time == current_time:
-                    if good.type in self.station_goods.keys():
-                        self.station_goods[good.type].append(good)
-                    else:
-                        self.station_goods[good.type] = []
-                        self.station_goods[good.type].append(good)
-                    total_good = 0
+                    self.station_goods.add_good(good.type, good.amount)
                     logging.debug("Station: Unloading goods from truck")
-                    self.log_goods()
+        self.check_states()
 
     def log_goods(self):
         total_good = 0

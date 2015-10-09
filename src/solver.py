@@ -130,7 +130,7 @@ class Solver(object):
             for k, amount in enumerate(coming_goods):
                 new_good = Good(k, amount)
                 self.inbound_trucks[name].coming_good_amounts[k] = amount
-                self.inbound_trucks[name].coming_goods.append(new_good)
+                self.inbound_trucks[name].coming_goods.add_good(k, amount)
 
         for i in range(self.data.number_of_outbound_trucks):
             self.truck_data['number'] = i
@@ -151,7 +151,7 @@ class Solver(object):
             for k, amount in enumerate(coming_goods):
                 # print('amount', amount)
                 new_good = Good(k, amount)
-                self.compound_trucks[name].coming_goods.append(new_good)
+                self.compound_trucks[name].coming_goods.add_good(k, amount)
                 self.compound_trucks[name].coming_good_amounts[k] = int(amount)
             for k, amount in enumerate(going_goods):
                 self.compound_trucks[name].going_good_amounts[k] = int(amount)
@@ -176,32 +176,30 @@ class Solver(object):
             truck.current_state = 0
 
         for truck in self.inbound_trucks.values():
-            truck.coming_goods = []
+            truck.coming_goods = GoodStore()
             truck.finish_time = truck.inbound_gdj
             for good_type, amount in truck.coming_good_amounts.items():
-                new_good = Good(good_type, amount)
-                truck.coming_goods.append(new_good)
+                truck.coming_goods.add_good(good_type, amount)
 
-        for truck in self.outbound_trucks.values():
-            truck.going_goods = []
-            truck.finish_time = truck.outbound_gdj
-            for good_type, amount in truck.going_good_amounts.items():
-                new_good = Good(good_type, amount)
-                truck.going_goods.append(new_good)
+        # for truck in self.outbound_trucks.values():
+        #     truck.going_goods = GoodStore
+        #     truck.finish_time = truck.outbound_gdj
+        #     for good_type, amount in truck.going_good_amounts.items():
+        #         truck.going_goods.add_good(good_type, amount)
 
         for truck in self.compound_trucks.values():
             truck.finish_time = truck.inbound_gdj
-            truck.coming_goods = []
-            truck.going_goods = []
+            truck.coming_goods = GoodStore()
+            truck.going_goods = GoodStore()
             for good_type, amount in truck.coming_good_amounts.items():
-                new_good = Good(good_type, amount)
-                truck.coming_goods.append(new_good)
-            for good_type, amount in truck.going_good_amounts.items():
-                new_good = Good(good_type, amount)
-                truck.going_goods.append(new_good)
+                truck.coming_goods.add_good(good_type, amount)
+                # truck.going_goods.add_good(good_type, amount)
+            # for good_type, amount in truck.going_good_amounts.items():
+            #     new_good = Good(good_type, amount)
+            #     truck.going_goods.append(new_good)
 
         self.station.not_ready_goods = {}
-        self.station.station_goods = {}
+        self.station.station_goods = GoodStore()
 
         for door in self.station.shipping_doors.values():
             door.status_number = 0
@@ -270,7 +268,7 @@ class Solver(object):
         :param sequence:
         :return:
         """
-        self.current_sequence = sequence['inbound']
+        self.current_sequence = sequence.inbound_sequence
         self.door_sequences = []
         prev_index = 0
 
@@ -297,7 +295,7 @@ class Solver(object):
                     self.station.receiving_doors[door_name].sequence.append(self.compound_trucks[trucks])
 
         # outbound
-        self.current_sequence = sequence['outbound']
+        self.current_sequence = sequence.outbound_sequence
         self.door_sequences = []
 
         prev_index = 0

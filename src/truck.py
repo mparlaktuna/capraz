@@ -1,5 +1,6 @@
 __author__ = 'robotes'
 
+from src.good_store import GoodStore
 from random import uniform
 import logging
 
@@ -44,8 +45,7 @@ class Truck(object):
         self.current_state += 1
 
     def log_truck(self):
-        pass
-        # logging.debug('--Truck name: {0}, current state:{1}, next state:{2}'.format(self.truck_name, self.state_list[self.current_state], self.finish_time))
+        logging.debug('--Truck name: {0}, current state:{1}, next state:{2}'.format(self.truck_name, self.state_list[self.current_state], self.finish_time))
 
 class InboundTruck(Truck):
     """
@@ -63,10 +63,9 @@ class InboundTruck(Truck):
         self.inbound_gdj = 0
         self.door_number = 0
         self.receive_door = 0
-        self.coming_goods = []
         self.coming_good_amounts = {}
-        self.going_good_amounts = {}
         self.bounds = 0
+        self.coming_goods = GoodStore()
 
     def calculate_gdj(self):
         self.calculate_twogd()
@@ -94,9 +93,8 @@ class InboundTruck(Truck):
 
         total = 0
         logging.debug("----Deploy goods:")
-        for good in self.coming_goods:
-            total += good.amount
-            logging.debug("------{0}: {1}".format(good.type, good.amount))
+        total += self.coming_goods.total()
+
         self.finish_time = int(self.current_time + total * self.loading_time)
         logging.debug("----Finish time: {0}".format(self.finish_time))
         self.next_state()
@@ -124,8 +122,7 @@ class OutboundTruck(Truck):
         Truck.__init__(self, truck_data)
         self.truck_type = 1
         self.state_list = ('coming', 'waiting_to_load', 'not_ready_to_load', 'ready_to_load', 'must_load', 'loading', 'done')
-        self.going_goods = []
-        self.coming_good_amounts = {}
+        self.going_goods = GoodStore()
         self.going_good_amounts = {}
         self.finish_time = 0
         self.outbound_gdj = 0
@@ -247,7 +244,6 @@ class OutboundTruck(Truck):
         else:
             self.error = self.finish_time - self.bounds[1]
 
-
 class CompoundTruck(Truck):
     """
     compound truck class
@@ -256,8 +252,8 @@ class CompoundTruck(Truck):
         Truck.__init__(self, truck_data)
         self.truck_type = 2
         self.state_list = ('coming', 'waiting', 'start_deploy', 'deploying', 'transfering', 'waiting_to_load', 'not_needed_to_load', 'ready_to_load', 'must_load', 'loading', 'done')
-        self.coming_goods = []
-        self.going_goods = []
+        self.coming_goods = GoodStore()
+        self.going_goods = GoodStore()
 
         self.coming_good_amounts = {}
         self.going_good_amounts = {}
@@ -380,12 +376,8 @@ class CompoundTruck(Truck):
     def start_deploy(self):
         total = 0
         logging.debug("----Deploy goods:")
-        for good in self.coming_goods:
-            total += good.amount
-            logging.debug("------{0}: {1}".format(good.type, good.amount))
-
+        total += self.coming_goods.total()
         self.finish_time = int(self.current_time + total * self.loading_time)
-
         logging.debug("----Finish time: {0}".format(self.finish_time))
         self.next_state()
 
