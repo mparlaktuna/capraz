@@ -1,0 +1,24 @@
+Number of inbound trucks: {{number_of_inbound}}
+Number of outbound trucks: {{number_of_outbound}}
+Number of compound trucks: {{number_of_compound}}
+Number of receiving doors: {{number_of_receiving_doors}}
+Number of shipping doors: {{number_of_shipping_doors}}
+Number of goods: {{number_of_goods}}
+Changeover time: {{changeover_time}}
+Loading Time: {{loading_time}}
+Makespan Factor: {{makespan_factor}}
+Tranfer Time: {{tranfer_time}}
+Good Transfer Time: {{good_transfer_time}}
+Inbound Arrival Base Time: {{inbound_arrival_time}}
+Outbound Arrival Base Time: {{outbound_arrival_time}}
+Data Set: {{data_set}}
+
+Arrivals: {{arrivals}}
+
+Boundaries: {{boundaries}}
+
+Inbound Goods: {{inbound_goods}}
+
+Outbound Goods: {{outbound_goods}}
+
+Compound Goods: {{compound_goods}}

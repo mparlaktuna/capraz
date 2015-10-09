@@ -1,6 +1,9 @@
 from src.logger_data import LogData
 from src.data_store import DataStore
 from src.truck_data_window import TruckDataWindow
+from src.data_set_window import DataSetWindow
+from src.show_data import ShowData
+from src.solver import Solver
 
 import logging
 import sys
@@ -21,6 +24,8 @@ class MainWindow(QWidget):
 
         self.data = DataStore()
         self.truckDataWindow = TruckDataWindow(self.data)
+        self.dataSetWindow = DataSetWindow(self.data)
+        self.showDataWindow = ShowData(self.data)
 
         self.set_buttons()
 
@@ -45,10 +50,16 @@ class MainWindow(QWidget):
         self.truck_data_button.clicked.connect(self.truckDataWindow.exec_)
 
         self.system_data_button = QPushButton('System Data')
+        self.system_data_button.clicked.connect(self.dataSetWindow.exec_)
+
         self.algorithm_data_button = QPushButton('Algorithm Data')
 
         self.generate_data_set_button = QPushButton('Generate Data Set')
+        self.generate_data_set_button.clicked.connect(self.generate_data_set)
+
         self.show_data_button = QPushButton('Show Data Set')
+        self.show_data_button.clicked.connect(self.showDataWindow.exec_)
+
         self.print_gams_button = QPushButton('Print gams output')
 
         self.data_set_ready_button = QPushButton('Data Set Ready')
@@ -71,10 +82,10 @@ class MainWindow(QWidget):
         #
         #
         #
-        # self.system_data_button.clicked.connect(self.show_system_data)
+        #
         # self.algorithm_data_button.clicked.connect(self.show_algorithm_data)
         #
-        # self.generate_data_set_button.clicked.connect(self.generate_data_set)
+        #
         # self.show_data_button.clicked.connect(self.show_data)
         # self.print_gams_button.clicked.connect(self.print_gams)
         #
@@ -188,6 +199,17 @@ class MainWindow(QWidget):
             logging.info('Saved to file: {0}'.format(file_name))
         except Exception as e:
             logging.info(e)
+
+    def generate_data_set(self):
+        # ask if sure
+
+        self.data.arrival_times = []
+        self.data.boundaries = []
+        self.model = Solver(self.data)
+
+        for i in range(len(self.data.data_set_list)):
+            self.model.current_data_set = i
+            self.model.set_data()
 
 if __name__ == '__main__':
     myApp = QApplication(sys.argv)
