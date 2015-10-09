@@ -203,7 +203,7 @@ class Solver(object):
 
         for door in self.station.shipping_doors.values():
             door.status_number = 0
-            door.reserved_goods = {}
+            door.reserved_goods = GoodStore()
             door.sequence = []
 
         for door in self.station.receiving_doors.values():

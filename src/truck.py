@@ -244,6 +244,7 @@ class OutboundTruck(Truck):
         else:
             self.error = self.finish_time - self.bounds[1]
 
+
 class CompoundTruck(Truck):
     """
     compound truck class

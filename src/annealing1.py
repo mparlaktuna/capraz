@@ -2,8 +2,10 @@ from src.solver import Solver
 from src.data_store import DataStore
 from src.sequence import Sequence
 
+import math
 import logging
 import itertools
+import random
 
 class Annealing1(object):
     """
@@ -26,6 +28,9 @@ class Annealing1(object):
 
         self.step_mode = False
 
+        self.temperature = 100
+        self.temperature_reduction_rate = 0.9
+
     def solve(self):
         self.solve_iteration()
 
@@ -44,7 +49,8 @@ class Annealing1(object):
         elif self.current_iteration_number < self.number_of_iterations:
             if self.model.current_time == 0:
                 self.print_iteration_start()
-                self.next_sequence()
+                self.annealing1()
+                self.random1()
                 self.model.set_sequence(self.sequences['current'])
             self.solve_step()
 
@@ -78,8 +84,11 @@ class Annealing1(object):
         """
         total_error = 0
         for truck in itertools.chain(self.model.outbound_trucks.values(), self.model.compound_trucks.values()):
+            truck.calculate_error()
+            logging.info("Truck {0}, error {1}\n".format(truck.truck_name, truck.error))
             total_error += abs(truck.error)
         logging.info("Error: {0}\n".format(total_error))
+        self.sequences['current'].error = total_error
         return total_error
 
     def iteration_finished(self):
@@ -161,29 +170,33 @@ class Annealing1(object):
         logging.info("Start sequence outbound: {0}".format(self.current_seq['outbound']))
 
         self.current_sequence = Sequence(self.current_seq['inbound'], self.current_seq['outbound'])
-        self.solution_sequence = Sequence(self.current_seq['inbound'], self.current_seq['outbound'])
+        self.prev_sequence = Sequence(self.current_seq['inbound'], self.current_seq['outbound'])
         self.best_sequence = Sequence(self.current_seq['inbound'], self.current_seq['outbound'])
+        self.best_sequence.error = float('inf')
+        self.prev_sequence.error = float('inf')
 
         self.sequences['current'] = self.current_sequence
         self.sequences['best'] = self.best_sequence
-        self.sequences['solution'] = self.solution_sequence
+        self.sequences['prev'] = self.prev_sequence
 
     def random1(self):
         """
         generates a random next sequence
         :return:
         """
-        self.next_sequence = copy.deepcopy(self.current_sequence)
+        self.next_sequence = {}
+        self.next_sequence['inbound'] = self.sequences['prev'].inbound_sequence
+        self.next_sequence['outbound'] = self.sequences['prev'].outbound_sequence
 
         truck_type = 'inbound'
-        a, b = self.generate_random(truck_type)
+        a, b = self.generate_random(self.next_sequence['inbound'])
         indexA = self.next_sequence[truck_type].index(a)
         indexB = self.next_sequence[truck_type].index(b)
         self.next_sequence[truck_type][indexA] = b
         self.next_sequence[truck_type][indexB] = a
 
         truck_type = 'outbound'
-        a, b = self.generate_random(truck_type)
+        a, b = self.generate_random(self.next_sequence['outbound'])
         indexA = self.next_sequence[truck_type].index(a)
         indexB = self.next_sequence[truck_type].index(b)
         self.next_sequence[truck_type][indexA] = b
@@ -192,30 +205,31 @@ class Annealing1(object):
 
         logging.info("Random1 next sequence inbound: {0}".format(self.next_sequence['inbound']))
         logging.info("Random1 next sequence outbound: {0}".format(self.next_sequence['outbound']))
-        self.solution_sequence = copy.deepcopy(self.next_sequence)
+        self.sequences['current'].inbound_sequence = self.next_sequence['inbound']
+        self.sequences['current'].outbound_sequence = self.next_sequence['outbound']
+        self.sequences['current'].error = 0
 
-    def generate_random(self, truck_type):
-        a = random.choice(self.current_sequence[truck_type])
-        b = random.choice(self.current_sequence[truck_type])
+    def generate_random(self, sequence):
+        a = random.choice(sequence)
+        b = random.choice(sequence)
         if a == b:
-            a, b = self.generate_random(truck_type)
+            a, b = self.generate_random(sequence)
         if isinstance(a, int) and isinstance(b, int):
-            a, b = self.generate_random(truck_type)
+            a, b = self.generate_random(sequence)
         return a, b
 
     def annealing1(self):
 
-        if self.solution_sequence['error'] < self.current_sequence['error']:
-            self.current_sequence = copy.deepcopy(self.solution_sequence)
-            if self.solution_sequence['error'] < self.best_sequence['error']:
-                self.best_sequence = copy.deepcopy(self.current_sequence)
+        if self.sequences['current'].error < self.sequences['prev'].error:
+            self.sequences['prev'] = Sequence(self.sequences['current'].inbound_sequence, self.sequences['current'].outbound_sequence)
+            self.sequences['prev'].error = self.sequences['current'].error
+            if self.sequences['current'].error < self.sequences['best'].error:
+                self.sequences['best'] = Sequence(self.sequences['current'].inbound_sequence, self.sequences['current'].outbound_sequence)
+                self.sequences['best'].error = self.sequences['current'].error
         else:
-            p_accept = math.exp((self.current_sequence['error'] - self.solution_sequence['error']) / self.temperature)
+            p_accept = math.exp((self.sequences['current'].error - self.sequences['prev'].error) / self.temperature)
             if p_accept >= random.random():
-                self.current_sequence = copy.deepcopy(self.solution_sequence)
+                self.sequences['prev'] = Sequence(self.sequences['current'].inbound_sequence, self.sequences['current'].outbound_sequence)
+                self.sequences['prev'].error = self.sequences['current'].error
+                self.temperature = self.temperature_reduction_rate * self.temperature
 
-
-        self.temperature = self.temperature_reduction_rate * self.temperature
-
-        self.previous_sequence = copy.deepcopy(self.current_sequence)
-        self.solution_sequence = copy.deepcopy(self.current_sequence)
