@@ -140,8 +140,7 @@ constraint23(i)..                                              ee(i)=g=GG(i);
 
 constraint25(j)$(ord(j)>{{compound_plus_one}})..                                   ff(j)=g=GT(j);
 
-constraint24(i,j)$(ord(i)=ord(j)and ord(i){{number_of_compound_trucks}})..                ee(i)+sum(k,r(i,k))+{{changeover_time}}+{{transfer_time}}=l=ff(j);
-
+constraint24(i,j)$(ord(i)=ord(j)and ord(i)and ord(j)<{{number_of_compound}})..                ee(i)+sum(k,r(i,k))+{{changeover_time}}+{{transfer_time}}=l=ff(j);
 
 objective..                                                    TT=e=h;
 

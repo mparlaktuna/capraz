@@ -80,6 +80,7 @@ class MainWindow(QWidget):
 
         self.solve_data_set_button = QPushButton('Solve Data Set')
         self.solve_data_set_button.setEnabled(False)
+        self.solve_data_set_button.clicked.connect(self.solve_data_set)
 
         self.show_logger_button = QPushButton('Show Logger')
         self.show_simulation_button = QPushButton('Show Simulation')
@@ -266,6 +267,9 @@ class MainWindow(QWidget):
     def solve_iteration(self):
         self.algorithm.step_mode = False
         self.algorithm.solve()
+
+    def solve_data_set(self):
+        self.algorithm.solve_data_set()
 
 if __name__ == '__main__':
     myApp = QApplication(sys.argv)

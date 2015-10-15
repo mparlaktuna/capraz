@@ -2,6 +2,7 @@ from src.solver import Solver
 from src.data_store import DataStore
 from src.sequence import Sequence
 
+import time
 import math
 import logging
 import itertools
@@ -31,6 +32,16 @@ class Annealing1(object):
 
         self.temperature = 100
         self.temperature_reduction_rate = 0.9
+
+    def solve_data_set(self):
+        start_time = time.time()
+        print(start_time)
+        while self.current_iteration_number < self.number_of_iterations:
+            self.step_mode = False
+            self.solve()
+        end_time = time.time()
+        print(end_time)
+        self.print_data_set_solution()
 
     def solve(self):
         self.solve_iteration()
@@ -110,6 +121,15 @@ class Annealing1(object):
 
     def print_start(self):
         logging.info("Data set number {0}".format(self.data_set_number))
+
+    def print_data_set_solution(self):
+        print("Best solution inbound{0}".format(self.sequences['best'].inbound_sequence))
+        print("Best solution inbound{0}".format(self.sequences['best'].inbound_sequence))
+        print("Best solution error{0}".format(self.sequences['best'].error))
+
+        logging.info("Best solution inbound{0}".format(self.sequences['best'].inbound_sequence))
+        logging.info("Best solution outbound{0}".format(self.sequences['best'].outbound_sequence))
+        logging.info("Best solution error{0}".format(self.sequences['best'].error))
 
     def start1(self):
         # do for outbound trucks too
