@@ -1,5 +1,3 @@
-__author__ = 'mustafa'
-
 class DataStore(object):
     """
     Stores all the data from the user

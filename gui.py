@@ -15,7 +15,6 @@ import itertools
 from PySide.QtGui import *
 from PySide.QtCore import *
 
-
 class MainWindow(QWidget):
     """
     Main window with control buttons logger and running output
@@ -36,7 +35,7 @@ class MainWindow(QWidget):
 
         self.current_data_set_number = 0
         # add these to gui
-        self.number_of_iterations = 100
+        self.number_of_iterations = 200
 
     def set_buttons(self):
         """
@@ -98,8 +97,6 @@ class MainWindow(QWidget):
         self.data_set_number = QSpinBox()
         self.data_set_number.setMinimum(1)
         self.data_set_number.valueChanged.connect(self.set_data_set_number)
-
-        #
 
     def set_logger(self):
         """
@@ -261,6 +258,7 @@ class MainWindow(QWidget):
         self.algorithm.solve_data_set()
 
     def solve_sequence(self):
+        logging.info('--------------------Solving one sequence---------------------------------')
         self.set_sequence = SetSequence(self.data)
         self.set_sequence.exec_()
         sequence = self.set_sequence.set_sequence()

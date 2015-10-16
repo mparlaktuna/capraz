@@ -11,8 +11,8 @@ def gams_writer(file_name, data_set_number, data = DataStore()):
     outbound_arrivals = []
     lower_boundaries = []
     upper_boundaries = []
-    inbound_goods = chain(data.inbound_goods, data.compound_coming_goods)
-    outbound_goods = chain(data.outbound_goods, data.compound_going_goods)
+    inbound_goods = chain(data.compound_coming_goods, data.inbound_goods)
+    outbound_goods = chain(data.compound_going_goods, data.outbound_goods)
 
     for i in range(data.number_of_compound_trucks):
         truck_name = 'compound' + str(i)

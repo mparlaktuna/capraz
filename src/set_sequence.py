@@ -46,7 +46,7 @@ class SetSequence(QDialog):
             text = 'compound' + str(i)
             self.inbound_sequence_list.append(text)
 
-        for i in range(self.data.number_of_receiving_doors):
+        for i in range(self.data.number_of_receiving_doors - 1):
             text = str(i)
             self.inbound_sequence_list.append(text)
 
@@ -58,7 +58,7 @@ class SetSequence(QDialog):
             text = 'compound' + str(i)
             self.outbound_sequence_list.append(text)
 
-        for i in range(self.data.number_of_shipping_doors):
+        for i in range(self.data.number_of_shipping_doors - 1):
             text = str(i)
             self.outbound_sequence_list.append(text)
 

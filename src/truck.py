@@ -221,7 +221,7 @@ class OutboundTruck(Truck):
         logging.debug("Loading finish {0}: {1}".format(self.truck_name, load_finish))
         self.finish_time = self.current_time + self.time_to_load
         if self.shipping_door.check_goods():
-            logging.info('Truck {0} started loading at {1}'.format(self.truck_name, self.current_time))
+
             self.current_state = 5
         elif load_finish >= self.bounds[1]:
             self.next_state()
@@ -243,6 +243,7 @@ class OutboundTruck(Truck):
         """
         calculate error values
         """
+        logging.info("truck {0}, finish time {1}, bounds {2}".format(self.truck_name, self.finish_time, self.bounds))
         if self.bounds[0] <= self.finish_time <= self.bounds[1]:
             self.error = 0
         elif self.finish_time < self.bounds[0]:

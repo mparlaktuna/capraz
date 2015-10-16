@@ -34,9 +34,16 @@ class Annealing1(object):
         self.temperature_reduction_rate = 0.9
 
     def solve_data_set(self):
+        self.set_start = timeit.default_timer()
         while self.current_iteration_number < self.number_of_iterations:
             self.step_mode = False
             self.solve()
+        self.set_end = timeit.default_timer()
+        self.start_time = timeit.default_timer()
+        logging.info('===========Best solution===========')
+        self.model.set_sequence(self.sequences['best'])
+        self.solve_step()
+        logging.info('Data set solve in {0} seconds'.format(self.set_end - self.set_start))
         self.print_data_set_solution()
 
     def solve(self):

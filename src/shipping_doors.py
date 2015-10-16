@@ -73,6 +73,7 @@ class ShippingDoor(object):
 
         if enough_goods:
             logging.debug('Enough goods')
+            logging.info('Truck {0} started loading at {1}'.format(self.loading_truck.truck_name, self.current_time))
         return enough_goods
 
     def reserve_goods(self, good_amounts):
