@@ -273,7 +273,10 @@ class Solver(object):
         prev_index = 0
 
         for door_number in range(self.number_of_receiving_doors - 1):
-            current_index = self.current_sequence.index(door_number)
+            try:
+                current_index = self.current_sequence.index(door_number)
+            except:
+                current_index = self.current_sequence.index(str(door_number))
             door_sequence = self.current_sequence[prev_index:current_index]
             self.door_sequences.append(door_sequence)
             prev_index = current_index + 1
@@ -300,7 +303,10 @@ class Solver(object):
 
         prev_index = 0
         for door_number in range(self.number_of_shipping_doors - 1):
-            current_index = self.current_sequence.index(door_number)
+            try:
+                current_index = self.current_sequence.index(door_number)
+            except:
+                current_index = self.current_sequence.index(str(door_number))
             door_sequence = self.current_sequence[prev_index:current_index]
             self.door_sequences.append(door_sequence)
             prev_index = current_index + 1

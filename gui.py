@@ -5,10 +5,12 @@ from src.show_data import ShowData
 from src.solver import Solver
 from src.annealing1 import Annealing1
 from src.data_writer import *
+from src.set_sequence import SetSequence
 
 import logging
 import sys
 import pickle
+import itertools
 
 from PySide.QtGui import *
 from PySide.QtCore import *
@@ -82,6 +84,10 @@ class MainWindow(QWidget):
         self.solve_data_set_button.setEnabled(False)
         self.solve_data_set_button.clicked.connect(self.solve_data_set)
 
+        self.solve_sequence_button = QPushButton('Solve a given sequence')
+        self.solve_data_set_button.setEnabled(True)
+        self.solve_sequence_button.clicked.connect(self.solve_sequence)
+
         self.show_logger_button = QPushButton('Show Logger')
         self.show_simulation_button = QPushButton('Show Simulation')
         self.show_data_table = QPushButton('Show Run Time Data Table')
@@ -93,25 +99,6 @@ class MainWindow(QWidget):
         self.data_set_number.setMinimum(1)
         self.data_set_number.valueChanged.connect(self.set_data_set_number)
 
-        #
-        #
-        #
-        #
-        #
-        # self.algorithm_data_button.clicked.connect(self.show_algorithm_data)
-        #
-        #
-        # self.show_data_button.clicked.connect(self.show_data)
-        #
-        #
-        #
-        #
-        # self.show_logger_button.clicked.connect(self.show_logger)
-        # self.show_data_table.clicked.connect(self.show_runtime_table)
-        #
-        # self.solve_next_data_set_button.clicked.connect(self.data_set_button)
-        #
-        #
         #
 
     def set_logger(self):
@@ -152,6 +139,7 @@ class MainWindow(QWidget):
         self.solver_layout.addWidget(self.solve_step_button, 1, 1)
         self.solver_layout.addWidget(self.solve_iteration_button, 1, 2)
         self.solver_layout.addWidget(self.solve_data_set_button, 1, 3)
+        self.solver_layout.addWidget(self.solve_sequence_button, 1, 4)
 
         self.interaction_layout = QGridLayout()
         self.interaction_layout.addWidget(self.show_logger_button, 1, 1)
@@ -259,6 +247,7 @@ class MainWindow(QWidget):
         self.solve_step_button.setEnabled(True)
         self.solve_iteration_button.setEnabled(True)
         self.solve_data_set_button.setEnabled(True)
+        self.solve_sequence_button.setEnabled(True)
 
     def solve_step(self):
         self.algorithm.step_mode = True
@@ -270,6 +259,29 @@ class MainWindow(QWidget):
 
     def solve_data_set(self):
         self.algorithm.solve_data_set()
+
+    def solve_sequence(self):
+        self.set_sequence = SetSequence(self.data)
+        self.set_sequence.exec_()
+        sequence = self.set_sequence.set_sequence()
+
+        sequence.print_sequence()
+
+        self.one_time_model = Solver(self.data)
+        self.one_time_model.current_data_set = self.current_data_set_number
+        self.one_time_model.load_data_set()
+
+        self.one_time_model.set_sequence(sequence)
+
+        while not self.one_time_model.finish:
+            self.one_time_model.next_step()
+
+        total_error = 0
+        for truck in itertools.chain(self.one_time_model.outbound_trucks.values(), self.one_time_model.compound_trucks.values()):
+            truck.calculate_error()
+            logging.info("Truck {0}, error {1}\n".format(truck.truck_name, truck.error))
+            total_error += abs(truck.error)
+        logging.info("Error: {0}\n".format(total_error))
 
 if __name__ == '__main__':
     myApp = QApplication(sys.argv)

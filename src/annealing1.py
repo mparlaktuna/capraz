@@ -2,7 +2,7 @@ from src.solver import Solver
 from src.data_store import DataStore
 from src.sequence import Sequence
 
-import time
+import timeit
 import math
 import logging
 import itertools
@@ -34,13 +34,9 @@ class Annealing1(object):
         self.temperature_reduction_rate = 0.9
 
     def solve_data_set(self):
-        start_time = time.time()
-        print(start_time)
         while self.current_iteration_number < self.number_of_iterations:
             self.step_mode = False
             self.solve()
-        end_time = time.time()
-        print(end_time)
         self.print_data_set_solution()
 
     def solve(self):
@@ -49,6 +45,7 @@ class Annealing1(object):
     def solve_iteration(self):
         if self.current_iteration_number == 0:
             if self.model.current_time == 0:
+                self.start_time = timeit.default_timer()
                 self.print_start()
                 self.start1()
                 self.print_iteration_start()
@@ -60,6 +57,7 @@ class Annealing1(object):
 
         elif self.current_iteration_number < self.number_of_iterations:
             if self.model.current_time == 0:
+                self.start_time = timeit.default_timer()
                 self.print_iteration_start()
                 self.annealing1()
                 self.random1()
@@ -85,6 +83,9 @@ class Annealing1(object):
             self.model.reset()
             # add reset
             self.current_iteration_number += 1
+            self.end_time = timeit.default_timer()
+            solution_time = self.end_time - self.start_time
+            logging.info("Iteration {0} finished in {1} seconds".format(self.current_iteration_number, solution_time))
             self.model.finish = False
             self.print_iteration_step()
 
