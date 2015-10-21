@@ -405,7 +405,7 @@ class CompoundTruck(Truck):
             logging.info('Truck {0} finished unloading goods at {1}'.format(self.truck_name, self.current_time))
             self.receiving_door.deploy_goods(self.coming_goods, self.current_time)
             self.next_state()
-            self.finish_time = self.current_time + self.transfer_time
+            self.finish_time = self.current_time + self.transfer_time + self.changeover_time
 
     def waiting_deploying(self):
         pass

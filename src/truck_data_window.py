@@ -288,3 +288,46 @@ class TruckDataWindow(QDialog):
         for truck_widget in self.compoundView:
             truck_widget.number_of_goods = self.numberGoodsSpin.value()
             truck_widget.update_table()
+
+
+    def load_good_from_file(self):
+        file_name, _ = QFileDialog.getOpenFileName(self, 'Open file', '/home')
+        f = open(file_name, 'rb')
+        for i in range(self.data.number_of_inbound_trucks):
+            good_list = f.readline()
+            self.data.inbound_goods[i] = good_list.split()
+
+        for i in range(self.data.number_of_outbound_trucks):
+            good_list = f.readline()
+            self.data.outbound_goods[i] = good_list.split()
+
+        for i in range(self.data.number_of_compound_trucks):
+            good_list = f.readline()
+            self.data.compound_coming_goods[i] = good_list.split()
+
+            good_list = f.readline()
+            self.data.compound_going_goods[i] = good_list.split()
+
+        for i in range(self.data.number_of_inbound_trucks):
+            for k in range(self.data.number_of_goods):
+                new_item = QTableWidgetItem()
+                new_item.setText(str(self.data.inbound_goods[i][k]))
+                self.inboundView[i].goodTable.setItem(0, k, new_item)
+
+        for i in range(self.data.number_of_outbound_trucks):
+            for k in range(self.data.number_of_goods):
+                new_item = QTableWidgetItem()
+                new_item.setText(str(self.data.outbound_goods[i][k]))
+                self.outboundView[-1].goodTable.setItem(0,k,new_item)
+
+        for i in range(self.data.number_of_compound_trucks):
+            for k in range(self.data.number_of_goods):
+                new_coming_item = QTableWidgetItem()
+                new_coming_item.setText(str(self.data.compound_coming_goods[i][k]))
+                self.compoundView[-1].goodTable.setItem(0, k, new_coming_item)
+                new_going_item = QTableWidgetItem()
+                new_going_item.setText(str(self.data.compound_going_goods[i][k]))
+                self.compoundView[-1].goodTable.setItem(1, k, new_going_item)
+
+        self.update_good_table()
+

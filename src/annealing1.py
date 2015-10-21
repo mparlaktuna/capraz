@@ -217,9 +217,6 @@ class Annealing1(object):
         self.next_sequence['inbound'] = copy.deepcopy(self.sequences['prev'].inbound_sequence)
         self.next_sequence['outbound'] = copy.deepcopy(self.sequences['prev'].outbound_sequence)
 
-        logging.info("Random1 prev sequence inbound: {0}".format(self.sequences['prev'].inbound_sequence))
-        logging.info("Random1 prev sequence outbound: {0}".format(self.sequences['prev'].outbound_sequence))
-
         truck_type = 'inbound'
         a, b = self.generate_random(self.next_sequence['inbound'])
         indexA = self.next_sequence[truck_type].index(a)
@@ -235,8 +232,6 @@ class Annealing1(object):
         self.next_sequence[truck_type][indexB] = a
         self.next_sequence['error'] = 0
 
-        logging.info("Random1 next sequence inbound: {0}".format(self.next_sequence['inbound']))
-        logging.info("Random1 next sequence outbound: {0}".format(self.next_sequence['outbound']))
         self.sequences['current'].inbound_sequence = self.next_sequence['inbound']
         self.sequences['current'].outbound_sequence = self.next_sequence['outbound']
         self.sequences['current'].error = 0
@@ -260,8 +255,7 @@ class Annealing1(object):
             logging.info("current error {0}, best error {1}, prev error {2}".format(self.sequences['current'].error, self.sequences['best'].error , self.sequences['prev'].error ))
         else:
             p_accept = math.exp((self.sequences['prev'].error - self.sequences['current'].error) / self.temperature)
-            logging.info("p current error {0}, prev error {1}, temperature {2}".format(self.sequences['current'].error, self.sequences['prev'].error, self.temperature))
-            logging.info("p accept {0}".format(p_accept))
+            logging.info("p current error {0}, prev error {1}, temperature {2}, p_accept{3}".format(self.sequences['current'].error, self.sequences['prev'].error, self.temperature, p_accept))
             if p_accept >= random.random():
                 logging.info("p accepted")
                 self.sequences['prev'] = Sequence(self.sequences['current'].inbound_sequence, self.sequences['current'].outbound_sequence)
