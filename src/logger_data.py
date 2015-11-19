@@ -1,6 +1,7 @@
 __author__ = 'mustafa'
 
-from PySide.QtGui import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
 
 class LogData(QWidget):
     """

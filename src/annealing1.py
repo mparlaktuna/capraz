@@ -9,11 +9,13 @@ import itertools
 import random
 import copy
 
+
 class Annealing1(object):
     """
     annealing algorithm
     """
     def __init__(self, number_of_iterations, data_set_number, model=Solver, data=DataStore):
+
         self.number_of_iterations = number_of_iterations
         self.data = data
         self.data_set_number = data_set_number

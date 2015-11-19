@@ -1,7 +1,7 @@
 __author__ = 'mustafa'
 
-from PySide.QtGui import *
-
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 class TruckTableWidget(QWidget):
     """

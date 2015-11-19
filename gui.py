@@ -12,8 +12,9 @@ import sys
 import pickle
 import itertools
 
-from PySide.QtGui import *
-from PySide.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
 
 class MainWindow(QWidget):
     """
@@ -87,6 +88,15 @@ class MainWindow(QWidget):
         self.solve_data_set_button.setEnabled(True)
         self.solve_sequence_button.clicked.connect(self.solve_sequence)
 
+        self.show_solution_button = QPushButton('Show Best Solution')
+        self.show_solution_button.setEnabled(False)
+        self.show_solution_button.clicked.connect(self.show_solution)
+
+        self.show_sequences_button = QPushButton('Show Sequences')
+        self.show_sequences_button.setEnabled(False)
+        self.show_sequences_button.clicked.connect(self.show_sequences)
+
+
         self.show_logger_button = QPushButton('Show Logger')
         self.show_simulation_button = QPushButton('Show Simulation')
         self.show_data_table = QPushButton('Show Run Time Data Table')
@@ -137,6 +147,7 @@ class MainWindow(QWidget):
         self.solver_layout.addWidget(self.solve_iteration_button, 1, 2)
         self.solver_layout.addWidget(self.solve_data_set_button, 1, 3)
         self.solver_layout.addWidget(self.solve_sequence_button, 1, 4)
+        self.solver_layout.addWidget(self.show_solution_button, 2, 1)
 
         self.interaction_layout = QGridLayout()
         self.interaction_layout.addWidget(self.show_logger_button, 1, 1)
@@ -245,6 +256,8 @@ class MainWindow(QWidget):
         self.solve_iteration_button.setEnabled(True)
         self.solve_data_set_button.setEnabled(True)
         self.solve_sequence_button.setEnabled(True)
+        self.show_solution_button.setEnabled(True)
+        self.show_sequences_button.setEnabled(True)
 
     def solve_step(self):
         self.algorithm.step_mode = True
@@ -280,6 +293,12 @@ class MainWindow(QWidget):
             logging.info("Truck {0}, error {1}\n".format(truck.truck_name, truck.error))
             total_error += abs(truck.error)
         logging.info("Error: {0}\n".format(total_error))
+
+    def show_solution(self):
+        pass
+
+    def show_sequences(self):
+        pass
 
 if __name__ == '__main__':
     myApp = QApplication(sys.argv)

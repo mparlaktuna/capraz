@@ -1,7 +1,7 @@
 from src.sequence import Sequence
 
-from PySide.QtGui import *
-from PySide.QtCore import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import QDialog
 
 from src.data_store import DataStore
 

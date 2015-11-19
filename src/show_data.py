@@ -1,8 +1,8 @@
 __author__ = 'mustafa'
 
-from PySide.QtGui import *
-from PySide.QtCore import *
+from PyQt5.QtCore import *
 from src.data_writer import print_data
+from PyQt5.QtWidgets import *
 
 class ShowData(QDialog):
     """

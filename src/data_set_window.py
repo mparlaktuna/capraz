@@ -2,8 +2,9 @@ __author__ = 'robotes'
 
 from src.data_store import DataStore
 
-from PySide.QtGui import *
-from PySide.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
 
 import logging
 
